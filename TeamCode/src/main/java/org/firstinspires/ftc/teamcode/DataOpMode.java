@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 
+import java.util.Locale;
+
 @Autonomous(name = "DATA VALUES", group = "")
 public class DataOpMode extends AutoOpMode  {
     @Override
@@ -31,7 +33,7 @@ public class DataOpMode extends AutoOpMode  {
             telemetry.addData("servo:", servo.getPosition());
         }
         for(ColorSensor colorSensor : map.getColorSensors()) {
-            telemetry.addData("colorsensor (r, g, b): ", String.format("%d, %d, %d", colorSensor.red(), colorSensor.green(), colorSensor.blue()));
+            telemetry.addData("colorsensor (r, g, b): ", String.format(Locale.ENGLISH, "%d, %d, %d", colorSensor.red(), colorSensor.green(), colorSensor.blue()));
         }
         for(DistanceSensor distanceSensor : map.getDistanceSensors()) {
             telemetry.addData("Distance sensor ", distanceSensor.getDistance(DistanceUnit.CM));
