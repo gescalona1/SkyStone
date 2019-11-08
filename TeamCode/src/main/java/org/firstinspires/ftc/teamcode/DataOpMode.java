@@ -16,8 +16,8 @@ public class DataOpMode extends AutoOpMode  {
     @Override
     public void setup(DeviceMap mapper) {
         mapper.setUpMotors(hardwareMap);
-        mapper.servoInit(hardwareMap);
-        mapper.sensorInit(hardwareMap);
+        mapper.setupServos(hardwareMap);
+        mapper.setupSensors(hardwareMap);
 
 
     }

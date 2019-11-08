@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.vuforia.Image;
 
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import org.opencv.core.Mat;
@@ -14,7 +13,7 @@ public class CameraTestAuto extends AutoOpMode {
     @Override
     public void setup(DeviceMap map) {
         //map.setUpVuforia(hardwareMap);
-        map.initOpenCV(hardwareMap);
+        map.setupOpenCV(hardwareMap);
         map.initTfod(hardwareMap);
 
         map.getCamera().setPipeline(pipeline = new SkystonePipeline());

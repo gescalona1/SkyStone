@@ -109,7 +109,6 @@ public final class MecanumDriver implements IDriver {
         map.getRightTop().setPower(RF);
         map.getLeftBottom().setPower(LB);
         map.getRightBottom().setPower(RB);
-
     }
 
     @Override

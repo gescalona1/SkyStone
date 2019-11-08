@@ -67,8 +67,8 @@ public final class DeviceMap {
         setUpImu(map);
         setUpVuforia(map);
         initTfod(map);
-        servoInit(map);
-        sensorInit(map);
+        setupServos(map);
+        setupSensors(map);
     }
 
     /**
@@ -114,7 +114,7 @@ public final class DeviceMap {
 
     }
 
-    public void servoInit(HardwareMap map){
+    public void setupServos(HardwareMap map){
         telemetry.addLine("Setting up servos");
         telemetry.update();
 
@@ -128,7 +128,7 @@ public final class DeviceMap {
         };
     }
 
-    public void sensorInit(HardwareMap map){
+    public void setupSensors(HardwareMap map){
         telemetry.addLine("Setting up sensors");
         telemetry.addLine();
 
@@ -165,7 +165,7 @@ public final class DeviceMap {
         //}, service);
     }
 
-    public void initOpenCV(HardwareMap map) {
+    public void setupOpenCV(HardwareMap map) {
         Context appContext = map.appContext;
         int cameraMonitorViewId = appContext.getResources().getIdentifier("cameraMonitorViewId", "id", appContext.getPackageName());
         camera = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);

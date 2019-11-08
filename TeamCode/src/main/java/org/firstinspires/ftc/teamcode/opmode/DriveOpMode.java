@@ -29,14 +29,9 @@
 
 package org.firstinspires.ftc.teamcode.opmode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.DeviceMap;
 import org.firstinspires.ftc.teamcode.drive.MecanumDriver;
@@ -69,7 +64,7 @@ public abstract class DriveOpMode extends OpMode {
         DeviceMap.setTelemetry(telemetry);
         DeviceMap mapper = DeviceMap.getInstance(hardwareMap);
         mapper.setUpMotors(hardwareMap);
-        mapper.servoInit(hardwareMap);
+        mapper.setupServos(hardwareMap);
 
 
         // Initialize the hardware variables. Note that the strings used here as parameters
@@ -112,7 +107,8 @@ public abstract class DriveOpMode extends OpMode {
         double x = gamepad1.left_stick_x;
         double y = -gamepad1.left_stick_y;
         double right_stick_x = -gamepad1.right_stick_x;
-        driver.move(x, y, right_stick_x);
+        double multiplier = gamepad1.left_trigger + 1;
+        driver.move(x / multiplier, y / multiplier, right_stick_x / multiplier);
 
         driver.intake(gamepad2.left_stick_y, gamepad2.right_stick_y);
         driver.conveyer(-gamepad2.right_trigger);
