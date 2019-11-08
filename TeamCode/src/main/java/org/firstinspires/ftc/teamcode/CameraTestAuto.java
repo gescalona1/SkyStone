@@ -10,21 +10,24 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name="Camera: help me", group="Linear Opmode")
 public class CameraTestAuto extends AutoOpMode {
+    private SkystonePipeline pipeline;
     @Override
     public void setup(DeviceMap map) {
         //map.setUpVuforia(hardwareMap);
         map.initOpenCV(hardwareMap);
         map.initTfod(hardwareMap);
 
-        map.getCamera().setPipeline(new Pipeline());
+        map.getCamera().setPipeline(pipeline = new SkystonePipeline());
         telemetry.update();
-        DeviceMap.getInstance().getCamera().startStreaming(320, 240);
+        DeviceMap.getInstance().getCamera().startStreaming(pipeline.getRows(), pipeline.getCols());
     }
 
     @Override
     public void beforeLoop() {
-
-
+        addData("Values", SkystonePipeline.getValLeft() + "   "+
+                SkystonePipeline.getValMid()+"   "+
+                SkystonePipeline.getValRight());
+        updateTelemetry();
     }
 
     @Override
