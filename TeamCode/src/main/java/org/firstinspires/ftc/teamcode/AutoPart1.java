@@ -30,9 +30,5 @@ public class AutoPart1 extends AutoOpMode {
 
     }
 
-    public boolean skyStoneMiddle() {
-        int left = SkystonePipeline.getValLeft();
-        int center = SkystonePipeline.getValMid();
-        int right = SkystonePipeline.getValRight();
-    }
+
 }

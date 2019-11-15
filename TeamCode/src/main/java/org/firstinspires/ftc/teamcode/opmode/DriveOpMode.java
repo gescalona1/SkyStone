@@ -114,40 +114,37 @@ public abstract class DriveOpMode extends OpMode {
         driver.conveyer(-gamepad2.right_trigger);
 
         Servo left = map.getLeftAuto();
-        if(gamepad1.a) {
-            left.setPosition(left.getPosition() + 0.1);
+        if(gamepad1.b) {
+            left.setPosition(0.4);
         }
-        if(gamepad1.x) {
-            left.setPosition(left.getPosition() - 0.1);
+        if(gamepad1.y) {
+            left.setPosition(1);
         }
+        telemetry.addData("leftPos: ", left.getPosition());
 
         Servo right = map.getRightAuto();
-        if(gamepad1.b) {
-            right.setPosition(right.getPosition() + 0.1);
+        if(gamepad1.a) {
+            right.setPosition(0.4);
         }
 
-        if(gamepad1.y) {
-            right.setPosition(right.getPosition() - 0.1);
+        if(gamepad1.x) {
+            right.setPosition(0);
         }
+        telemetry.addData("rightPos: ", right.getPosition());
 
-        if(gamepad1.dpad_left){
-            driver.autoArm(0, 1);
-        } else if(gamepad1.dpad_right){
-            driver.autoArm(0.5, 0.5);
-        }
 
         if(gamepad2.left_bumper){
-            map.getLeftBat().setPosition(0);
+            map.getLeftBat().setPosition(1);
         } else {
-            map.getLeftBat().setPosition(0.5);
+            map.getLeftBat().setPosition(0);
         }
 
         if(gamepad2.right_bumper){
-            map.getRightBat().setPosition(1);
-        } else {
             map.getRightBat().setPosition(0.5);
+        } else {
+            map.getRightBat().setPosition(1);
         }
-
+        telemetry.update();
     }
 
     /*
