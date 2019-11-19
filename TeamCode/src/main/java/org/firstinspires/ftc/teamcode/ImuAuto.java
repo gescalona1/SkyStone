@@ -8,14 +8,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.monitor.MonitorIMU;
-import org.firstinspires.ftc.teamcode.monitor.MonitorManager;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 
 import java.util.Locale;
 
-@Autonomous(name="help me", group="Linear Opmode")
-public class TestAuto extends AutoOpMode {
+@Autonomous(name="IMU: help me", group="Linear Opmode")
+public class ImuAuto extends AutoOpMode {
     @Override
     public void preInit() {
         super.preInit();
@@ -27,29 +25,21 @@ public class TestAuto extends AutoOpMode {
 
     @Override
     public void setup(DeviceMap map) {
-        map.setUpMotors(hardwareMap);
         map.setUpImu(hardwareMap);
+        telemetry.addData("Setted up imu!", "ready to go!");
     }
 
     @Override
     public void beforeLoop() {
-        for(DcMotor motor : driver.getMotors())
-            telemetry.addLine("Motor: " + motor.getCurrentPosition());
-        BNO055IMU imu = DeviceMap.getInstance().getImu();
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-        float[] floats = new float[] {
-                orientation.firstAngle,
-                orientation.secondAngle,
-                orientation.thirdAngle
-        };
-        telemetry.addLine(String.format(Locale.ENGLISH, "Angles: %f %f %f", floats[0], floats[1], floats[2]));
+        DeviceMap map = DeviceMap.getInstance();
+
+        telemetry.addLine(String.format(Locale.ENGLISH, "Angle: %f", map.getAngle()));
         telemetry.update();
 
     }
 
     @Override
     public void run() {
-        driver.turn(0.2, 180, this);
-        driver.turn(0.2, 90, this);
+        driver.turn(1, 90, this);
     }
 }

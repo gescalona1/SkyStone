@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.drive;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.DeviceMap;
 import org.firstinspires.ftc.teamcode.monitor.MonitorIMU;
 
@@ -48,7 +52,7 @@ public final class MecanumDriver implements IDriver {
         }
          */
 
-        telemetry.update();
+        updateTelemetry();
     }
 
     /**
@@ -120,22 +124,30 @@ public final class MecanumDriver implements IDriver {
             turn(power, angle + ((angle < 0) ? +180D : -180D), stopRequested);
             return;
         }
-        Direction direction = angle > 0 ? Direction.COUNTERCLOCKWISE : Direction.CLOCKWISE;
+        Direction direction = angle < 0 ? Direction.CLOCKWISE : Direction.COUNTERCLOCKWISE;
 
-        move(direction, power);
+        //angle = 50
+        //turn_offset = 5
+
+        //min = 45
         float min = (float) angle - TURN_OFFSET;
+        //min = 55
         float max = (float) angle + TURN_OFFSET;
 
-        float currentAngle = MonitorIMU.getAngleThird();
-            while ((currentAngle < min || currentAngle > max)) {
+        move(direction, power);
 
-                addData("Direction: ", direction);
-                addData("Min: ", min);
-                addData("Max: ", max);
-                addData("zAngle: ", currentAngle);
-                telemetry.update();
-                currentAngle = MonitorIMU.getAngleThird();
-            }
+
+
+        float currentAngle = (float) map.getAngle();
+        currentAngle = MathUtil.convert180to360(currentAngle);
+        float firstAngle = currentAngle;
+
+        min = MathUtil.limit360(min + firstAngle);
+        max = MathUtil.limit360(max + firstAngle);
+
+
+        while (stopRequested.opModeisActive() && !(min < currentAngle && currentAngle < max))
+            currentAngle = (float) map.getAngle();
         stop();
     }
 
@@ -156,8 +168,10 @@ public final class MecanumDriver implements IDriver {
     }
 
     public void autoArm(double posLeft, double posRight){
-        map.getLeftAuto().setPosition(posLeft);
-        map.getRightAuto().setPosition(posRight);
+        if(posLeft != -100)
+            map.getLeftAuto().setPosition(posLeft);
+        if(posRight != -100)
+            map.getRightAuto().setPosition(posRight);
     }
 
 

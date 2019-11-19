@@ -36,7 +36,7 @@ public class MonitorIMU implements IMonitor {
         if(started) throw new RuntimeException("This method cannot be called twice! MonitorIMU:26");
         started = true;
 
-        this.executor.schedule(this, 25, TimeUnit.MILLISECONDS);
+        this.executor.scheduleAtFixedRate(this, 0, 25, TimeUnit.MILLISECONDS);
     }
 
     @Override
