@@ -68,21 +68,35 @@ public final class MecanumDriver implements IDriver {
         DcMotor leftBottom = map.getLeftBottom();
         DcMotor rightBottom = map.getRightBottom();
 
+        if((direction == Direction.LEFT) || (direction == Direction.RIGHT)){
+            inches *= (1D / 0.7D);
+        }
+
         double calc = COUNTS_PER_INCH * inches;
+
         //other calculations needed
         leftTop.setTargetPosition(leftTop.getCurrentPosition() + (int) (calc * direction.getLeftTop()));
         rightTop.setTargetPosition(rightTop.getCurrentPosition() + (int) (calc * direction.getRightTop()));
         leftBottom.setTargetPosition(leftBottom.getCurrentPosition() + (int) (calc * direction.getLeftBottom()));
         rightBottom.setTargetPosition(rightBottom.getCurrentPosition() + (int) (calc * direction.getRightBottom()));
 
+
         for(DcMotor motor : motors) {
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         move(direction, power);
+        int i = 0;
         while(motorsBusy()) {
-
+            telemetry.addLine("" + leftTop.getCurrentPosition() + "," + leftTop.getTargetPosition());
+            telemetry.addLine("" + rightTop.getCurrentPosition() + "," + rightTop.getTargetPosition());
+            telemetry.addLine("" + leftBottom.getCurrentPosition() + "," + leftBottom.getTargetPosition());
+            telemetry.addLine("" + rightBottom.getCurrentPosition() + "," + rightBottom.getTargetPosition());
+            telemetry.update();
         }
+        telemetry.clearAll();
+        telemetry.addLine("complete");
+        telemetry.update();
         stop();
 
         for(DcMotor motor : motors) {
@@ -186,10 +200,12 @@ public final class MecanumDriver implements IDriver {
     }
 
     public boolean motorsBusy() {
-        for(DcMotor motor : motors) {
-            if(motor.isBusy()) return true;
-        }
-        return false;
+        DcMotor leftTop = map.getLeftTop();
+        DcMotor rightTop = map.getRightTop();
+        DcMotor leftBottom = map.getLeftBottom();
+        DcMotor rightBottom = map.getRightBottom();
+
+        return leftBottom.isBusy() && rightBottom.isBusy() && rightTop.isBusy() && leftTop.isBusy();
     }
     public DcMotor[] getMotors() {
         return motors;

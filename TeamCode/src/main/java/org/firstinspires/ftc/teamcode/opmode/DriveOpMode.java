@@ -140,7 +140,7 @@ public abstract class DriveOpMode extends OpMode {
         }
 
         if(gamepad2.right_bumper){
-            map.getRightBat().setPosition(0.5);
+            map.getRightBat().setPosition(0);
         } else {
             map.getRightBat().setPosition(1);
         }
