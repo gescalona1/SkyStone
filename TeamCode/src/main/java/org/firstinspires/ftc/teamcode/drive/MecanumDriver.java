@@ -86,17 +86,10 @@ public final class MecanumDriver implements IDriver {
         }
 
         move(direction, power);
-        int i = 0;
         while(motorsBusy()) {
-            telemetry.addLine("" + leftTop.getCurrentPosition() + "," + leftTop.getTargetPosition());
-            telemetry.addLine("" + rightTop.getCurrentPosition() + "," + rightTop.getTargetPosition());
-            telemetry.addLine("" + leftBottom.getCurrentPosition() + "," + leftBottom.getTargetPosition());
-            telemetry.addLine("" + rightBottom.getCurrentPosition() + "," + rightBottom.getTargetPosition());
-            telemetry.update();
+            move(direction, power);
         }
-        telemetry.clearAll();
-        telemetry.addLine("complete");
-        telemetry.update();
+
         stop();
 
         for(DcMotor motor : motors) {
@@ -150,15 +143,12 @@ public final class MecanumDriver implements IDriver {
 
         move(direction, power);
 
-
-
         float currentAngle = (float) map.getAngle();
         currentAngle = MathUtil.convert180to360(currentAngle);
         float firstAngle = currentAngle;
 
         min = MathUtil.limit360(min + firstAngle);
         max = MathUtil.limit360(max + firstAngle);
-
 
         while (stopRequested.opModeisActive() && !(min < currentAngle && currentAngle < max))
             currentAngle = (float) map.getAngle();

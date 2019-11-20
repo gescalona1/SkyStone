@@ -40,7 +40,6 @@ public class AutoPart1 extends AutoOpMode {
     public void pickSkyStone() {
         findSkystone();
         pickUpSkystone();
-
     }
 
     public Status skystone() {
