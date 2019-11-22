@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
+import android.view.OrientationEventListener;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -30,13 +34,23 @@ public class SkystonePipeline extends OpenCvPipeline {
     private final static float[] rightPos = {6f/8f+offsetX, 4f/8f+offsetY};
     //moves all rectangles right or left by amount. units are in ratio to monitor
 
-    private final int rows = 640;
-    private final int cols = 480;
+    private final int rows;
+    private final int cols;
 
     Mat yCbCrChan2Mat = new Mat();
     Mat thresholdMat = new Mat();
     Mat all = new Mat();
     List<MatOfPoint> contoursList = new ArrayList<>();
+
+    public SkystonePipeline(int orientation, int rows, int cols) {
+        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            this.rows = cols;
+            this.cols = rows;
+        }else {
+            this.rows = rows;
+            this.cols = cols;
+        }
+    }
 
     enum Stage {//color difference. greyscale
         detection,//includes outlines

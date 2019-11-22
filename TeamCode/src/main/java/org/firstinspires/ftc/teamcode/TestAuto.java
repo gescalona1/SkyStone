@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.drive.Direction;
 import org.firstinspires.ftc.teamcode.monitor.MonitorIMU;
 import org.firstinspires.ftc.teamcode.monitor.MonitorManager;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
@@ -49,7 +50,6 @@ public class TestAuto extends AutoOpMode {
 
     @Override
     public void run() {
-        driver.turn(0.2, 180, this);
-        driver.turn(0.2, 90, this);
+        driver.move(Direction.FORWARD, 0.25, 20);
     }
 }

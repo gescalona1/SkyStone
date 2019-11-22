@@ -18,7 +18,7 @@ public class AutonomousRed extends AutoOpMode {
         map.setupOpenCV(hardwareMap);
         MonitorManager.startAll(map);
 
-        map.getCamera().setPipeline(pipeline = new SkystonePipeline());
+        map.getCamera().setPipeline(pipeline = new SkystonePipeline(hardwareMap.appContext.getResources().getConfiguration().orientation, 640, 480));
     }
 
     @Override
@@ -29,7 +29,7 @@ public class AutonomousRed extends AutoOpMode {
     @Override
     public void run() {
 //        driver.move(Direction.FORWARD, 1.0, 10);
-        driver.move(Direction.LEFT, 1.0, 10);
+        driver.move(Direction.FORWARD, .25, 60);
     }
 
 

@@ -22,7 +22,8 @@ public class AutoPart1 extends AutoOpMode {
         map.setupOpenCV(hardwareMap);
         MonitorManager.startAll(map);
 
-        map.getCamera().setPipeline(pipeline = new SkystonePipeline());
+        int orient = hardwareMap.appContext.getResources().getConfiguration().orientation;
+        map.getCamera().setPipeline(pipeline = new SkystonePipeline(orient, 640, 480));
     }
 
     @Override

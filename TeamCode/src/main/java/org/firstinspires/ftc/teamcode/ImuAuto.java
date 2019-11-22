@@ -26,6 +26,7 @@ public class ImuAuto extends AutoOpMode {
     @Override
     public void setup(DeviceMap map) {
         map.setUpImu(hardwareMap);
+        map.setUpMotors(hardwareMap);
         telemetry.addData("Setted up imu!", "ready to go!");
     }
 
@@ -40,6 +41,6 @@ public class ImuAuto extends AutoOpMode {
 
     @Override
     public void run() {
-        driver.turn(1, 90, this);
+        driver.turn(0.2, 90);
     }
 }

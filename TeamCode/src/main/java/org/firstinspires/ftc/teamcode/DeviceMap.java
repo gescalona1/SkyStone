@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.BNO055IMUImpl;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -20,7 +22,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcontroller.ultro.listener.UltroVuforia;
+import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
 import org.firstinspires.ftc.teamcode.drive.MathUtil;
+import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
@@ -35,7 +39,8 @@ public final class DeviceMap {
     private static final String LABEL_SKYSTONE = "Skystone";
 
     private static DeviceMap INSTANCE;
-    private static Telemetry telemetry;
+    private Telemetry telemetry;
+    private OpMode currentOpMode;
 
     private DcMotor leftTop, leftBottom, rightTop, rightBottom,
             leftIntake, rightIntake, conveyer;
@@ -167,7 +172,15 @@ public final class DeviceMap {
             parameters.loggingEnabled = true;
 
             imu.initialize(parameters);
-            while (!imu.isGyroCalibrated()) {
+
+
+            DeviceMap dmap = DeviceMap.getInstance();
+            LinearOpMode linear = null;
+            if(dmap.getCurrentOpMode() instanceof AutoOpMode) {
+                linear = (LinearOpMode) dmap.getCurrentOpMode();
+            }
+
+            while ((linear != null && linear.opModeIsActive()) && !imu.isGyroCalibrated()) {
 
             }
             imu.resetDeviceConfigurationForOpMode();
@@ -318,12 +331,20 @@ public final class DeviceMap {
         return INSTANCE;
     }
 
-    public static Telemetry getTelemetry() {
+    public Telemetry getTelemetry() {
         return telemetry;
     }
 
-    public static void setTelemetry(Telemetry ttelemetry) {
+    public void setTelemetry(Telemetry ttelemetry) {
         telemetry = ttelemetry;
+    }
+
+    public OpMode getCurrentOpMode() {
+        return currentOpMode;
+    }
+
+    public void setCurrentOpMode(OpMode currentOpMode) {
+        this.currentOpMode = currentOpMode;
     }
 
     public TFObjectDetector getTfod() {

@@ -61,8 +61,10 @@ public abstract class DriveOpMode extends OpMode {
      */
     @Override
     public void init() {
-        DeviceMap.setTelemetry(telemetry);
         DeviceMap mapper = DeviceMap.getInstance(hardwareMap);
+        mapper.setCurrentOpMode(this);
+        mapper.setTelemetry(telemetry);
+
         mapper.setUpMotors(hardwareMap);
         mapper.setupServos(hardwareMap);
 

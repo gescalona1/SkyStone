@@ -16,7 +16,7 @@ public class CameraTestAuto extends AutoOpMode {
         map.setupOpenCV(hardwareMap);
         map.initTfod(hardwareMap);
 
-        map.getCamera().setPipeline(pipeline = new SkystonePipeline());
+        map.getCamera().setPipeline(pipeline = new SkystonePipeline(hardwareMap.appContext.getResources().getConfiguration().orientation, 640, 480));
         telemetry.update();
         DeviceMap.getInstance().getCamera().startStreaming(pipeline.getRows(), pipeline.getCols());
     }

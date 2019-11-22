@@ -30,7 +30,7 @@ public class MonitorCamera implements IMonitor {
 
     public MonitorCamera(DeviceMap map) {
         this.vuforia = map.getVuforia();
-        this.telemetry = DeviceMap.getTelemetry();
+        this.telemetry = DeviceMap.getInstance().getTelemetry();
         if(vuforia == null) throw new RuntimeException("Error!");
         this.started = false;
 

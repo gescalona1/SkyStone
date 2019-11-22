@@ -73,11 +73,11 @@ public abstract class AutoOpMode extends LinearOpMode implements IActive {
     }
 
     public void preInit() {
-        DeviceMap.setTelemetry(telemetry);
-        telemetry.addData("Status", "Initialized");
-
         DeviceMap mapper = DeviceMap.getInstance(hardwareMap);
+        mapper.setCurrentOpMode(this);
         setup(mapper);
+        mapper.setTelemetry(telemetry);
+        addData("Status", "Initialized");
 
         if(mapper.getImu() != null)
             mapper.getImu().resetDeviceConfigurationForOpMode();
