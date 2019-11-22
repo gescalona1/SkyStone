@@ -71,8 +71,6 @@ public final class DeviceMap {
         INSTANCE = this;
         //CompletableFuture.allOf(
         //).thenRunAsync(() -> {
-            telemetry.addLine("Finished setting up all of the components");
-            telemetry.update();
         //}, service);
     }
     public void setupAll(HardwareMap map) {
