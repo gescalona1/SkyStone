@@ -45,7 +45,7 @@ public class AutonomousRed extends AutoPart1 {
         driver.move(Direction.BACKWARD, 0.5, 10);
 
         //turns and drives past bridge
-        driver.turn(0.3, -90);
+        driver.turn(0.3, 90);
         driver.move(Direction.FORWARD, 0.5, 100);
         map.getLeftAuto().setPosition(0.4);
         map.getRightAuto().setPosition(0.4);
@@ -56,11 +56,11 @@ public class AutonomousRed extends AutoPart1 {
         } else {
             driver.move(Direction.BACKWARD, 0.5, 28); //Inches value will need to be fixed
         }
-        driver.turn(0.3, 90);
+        driver.turn(0.3, -90);
         driver.move(Direction.FORWARD, 0.5, 10);
         map.getLeftAuto().setPosition(0);
         driver.move(Direction.BACKWARD, 0.5, 10);
-        driver.turn(0.3, -90);
+        driver.turn(0.3, 90);
 
         //drives past bridge, drops, then parks
         driver.move(Direction.FORWARD, 0.5, 30);
