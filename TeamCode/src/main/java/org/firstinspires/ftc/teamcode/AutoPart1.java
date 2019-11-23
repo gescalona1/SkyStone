@@ -8,11 +8,11 @@ import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 
 @Autonomous(name = "Test1")
 public class AutoPart1 extends AutoOpMode {
-    private enum Status {
+    public enum Status {
         RIGHT_CORNER, LEFT_CORNER, MIDDLE, NOT_SEEN, ALL_YELLOW
     }
 
-    private SkystonePipeline pipeline;
+    protected SkystonePipeline pipeline;
     @Override
     public void setup(DeviceMap map) {
         map.setUpImu(hardwareMap);
@@ -24,18 +24,19 @@ public class AutoPart1 extends AutoOpMode {
 
         int orient = hardwareMap.appContext.getResources().getConfiguration().orientation;
         map.getCamera().setPipeline(pipeline = new SkystonePipeline(orient, 640, 480));
+
+        DeviceMap.getInstance().getCamera().startStreaming(pipeline.getRows(), pipeline.getCols());
     }
 
     @Override
     public void beforeLoop() {
-
     }
 
     @Override
     public void run() {
         driver.move(Direction.FORWARD, 1, 6);
 
-        pickSkyStone();
+//        pickSkyStone();
     }
 
     public void pickSkyStone() {
@@ -56,7 +57,7 @@ public class AutoPart1 extends AutoOpMode {
         if(left == 255 && center == 0 && right == 255)
             return Status.MIDDLE;
 
-        if(center == 0) {
+        if(center == 255) {
             if(left == 0 && right == 255)
                 return Status.LEFT_CORNER;
             if(left == 255 && right == 0)
