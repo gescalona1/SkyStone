@@ -108,6 +108,7 @@ public final class DeviceMap {
             this.allMotors = new DcMotor[]{leftTop, rightTop, leftBottom, rightBottom,
                     leftIntake, rightIntake, conveyer
             };
+            for(DcMotor motor : this.driveMotors) motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             for(DcMotor motor : this.allMotors) {
                 motor.setPower(0);
                 motor.setDirection(DcMotorSimple.Direction.FORWARD);

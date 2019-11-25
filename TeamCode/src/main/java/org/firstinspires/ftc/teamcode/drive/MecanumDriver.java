@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import java.util.Locale;
 
 public final class MecanumDriver implements IDriver {
-    private static final float TURN_OFFSET = 2.0F;
+    private static final float TURN_OFFSET = 1.0F;
 
     private boolean test;
     private DeviceMap map;
@@ -44,21 +44,11 @@ public final class MecanumDriver implements IDriver {
      */
     @Override
     public void move(Direction direction, double power) {
-        addData("MOVING: ", direction.name());
+
         map.getLeftTop().setPower(direction.getLeftTop() * power);
         map.getRightBottom().setPower(direction.getRightBottom() * power);
         map.getRightTop().setPower(direction.getRightTop() * power);
         map.getLeftBottom().setPower(direction.getLeftBottom() * power);
-
-        /*
-        int[] movements = direction.getMovement();
-        int length = movements.length;
-        for(int i = 0; i < length; i++) {
-            map.getDriveMotors()[i].setPower(movements[i] * power);
-        }
-         */
-
-        updateTelemetry();
     }
 
     /**
@@ -171,15 +161,15 @@ public final class MecanumDriver implements IDriver {
         //turn_offset = 5
 
         //min = 45
-        float min = (float) angle - TURN_OFFSET;
+        double min = angle - TURN_OFFSET;
         //min = 55
-        float max = (float) angle + TURN_OFFSET;
+        double max = angle + TURN_OFFSET;
 
         move(direction, power);
 
         map.resetAngle();
-        float currentAngle = (float) map.getAngle();
-        float firstAngle = currentAngle;
+        double currentAngle = map.getAngle();
+        double firstAngle = currentAngle;
 
         min = min + firstAngle;
         max = max + firstAngle;
@@ -190,29 +180,19 @@ public final class MecanumDriver implements IDriver {
             linear = (LinearOpMode) map.getCurrentOpMode();
         }
 
-        StringBuilder builder = new StringBuilder();
-        builder.append("Settings: \n Direction: ");
-        builder.append(direction);
-        builder.append("\nStarting Angle: ");
-        builder.append(angle);
+        boolean boost;
+        final double oneThird = 1D/3D;
         while ((linear != null && linear.opModeIsActive()) && !(min <= currentAngle && currentAngle <= max)) {
-//            telemetry.addData(String.format(Locale.ENGLISH, "%f < %f < %f", min, currentAngle, max), "");
-//            telemetry.update();f
-            builder.append("min: ");
-            builder.append(min);
-            builder.append(" current: ");
-            builder.append(currentAngle);
-            builder.append(" max: ");
-            builder.append(max);
-            builder.append('\n');
-            currentAngle = (float) map.getAngle();
+            boost = Math.abs(angle) - 10D > currentAngle;
+            if(boost) move(direction, power * oneThird);
+            else move(direction, power);
+            currentAngle = map.getAngle();
         }
-        RobotLog.d(builder.toString());
         stop();
     }
 
     public void turnOrigin(double power) {
-        float angle = MonitorIMU.getAngleThird();
+        double angle = map.getAngle();
         turn(power, angle);
     }
 
