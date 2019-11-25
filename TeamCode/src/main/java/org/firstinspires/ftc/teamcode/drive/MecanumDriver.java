@@ -189,8 +189,8 @@ public final class MecanumDriver implements IDriver {
             linear = (LinearOpMode) map.getCurrentOpMode();
         }
         while ((linear != null && linear.opModeIsActive()) && !(min <= currentAngle && currentAngle <= max)) {
-            telemetry.addData(String.format(Locale.ENGLISH, "%f < %f < %f", min, currentAngle, max), "");
-            telemetry.update();
+//            telemetry.addData(String.format(Locale.ENGLISH, "%f < %f < %f", min, currentAngle, max), "");
+//            telemetry.update();
             currentAngle = (float) map.getAngle();
         }
         stop();
