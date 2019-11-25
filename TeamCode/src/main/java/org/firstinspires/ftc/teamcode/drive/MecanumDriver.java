@@ -158,10 +158,10 @@ public final class MecanumDriver implements IDriver {
 
     @Override
     public void turn(double power, double angle) {
-        angle = MathUtil.convert180to360(angle);
         if(Math.abs(angle) > 180) {
             //if it's more than +180 or less than -180, add towards 0: 180
-            turn(power, angle + ((angle < 0) ? angle +180D : angle-180D));
+            if(angle > 180) turn(power, angle - 180);
+            else if(angle < -180) turn(power, angle + 180);
             return;
         }
         Direction direction = angle > 0 ? Direction.CLOCKWISE : Direction.COUNTERCLOCKWISE;
@@ -176,6 +176,7 @@ public final class MecanumDriver implements IDriver {
 
         move(direction, power);
 
+        map.resetAngle();
         float currentAngle = (float) map.getAngle();
         currentAngle = MathUtil.convert180to360(currentAngle);
         float firstAngle = currentAngle;
