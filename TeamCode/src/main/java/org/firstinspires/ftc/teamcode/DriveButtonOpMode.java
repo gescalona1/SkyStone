@@ -105,6 +105,8 @@ public class DriveButtonOpMode extends DriveOpMode {
         Servo left = mapper.getLeftAuto();
         Servo right = mapper.getRightAuto();
 
+        Servo leftBat = mapper.getLeftBat();
+        Servo rightBat = mapper.getRightBat();
         buttons.addAll(Arrays.asList(
             builder.setGetter(() -> gamepad1.b)
                 .setbFunction(() -> {
@@ -123,7 +125,20 @@ public class DriveButtonOpMode extends DriveOpMode {
             builder.setGetter(() -> gamepad1.x)
                 .setbFunction(() -> {
                     right.setPosition(right.getPosition() - 0.1D);
+                }).build(),
+            builder.setGetter(() -> gamepad2.left_bumper)
+                .setbFunction(() -> {
+                    if(leftBat.getPosition() == 0.5)
+                        leftBat.setPosition(1);
+                    else leftBat.setPosition(0.5);
+                }).build(),
+            builder.setGetter(() -> gamepad2.right_bumper)
+                .setbFunction(() -> {
+                    if(rightBat.getPosition() == 0)
+                        rightBat.setPosition(0.5);
+                    else rightBat.setPosition(0);
                 }).build()));
+
 
         return buttons;
     }
@@ -158,42 +173,6 @@ public class DriveButtonOpMode extends DriveOpMode {
         driver.conveyer(-gamepad2.right_trigger);
 
         for(Button button : buttons) button.press();
-        /*
-        Servo left = map.getLeftAuto();
-        if(gamepad1.b) {
-            left.setPosition(0.4);
-        }
-        if(gamepad1.y) {
-            left.setPosition(1);
-        }
-        telemetry.addData("leftPos: ", left.getPosition());
-
-        Servo right = map.getRightAuto();
-        if(gamepad1.a) {
-            right.setPosition(0.4);
-        }
-
-        if(gamepad1.x) {
-            right.setPosition(0);
-        }
-        telemetry.addData("rightPos: ", right.getPosition());
-         */
-
-
-        if(gamepad2.left_bumper){
-            map.getLeftBat().setPosition(1);
-        } else {
-            map.getLeftBat().setPosition(0.5);
-        }
-
-        if(gamepad2.right_bumper){
-            map.getRightBat().setPosition(0);
-        } else {
-            map.getRightBat().setPosition(0.5);
-        }
-        telemetry.update();
-
-
     }
 
     /*

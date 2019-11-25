@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -178,22 +179,35 @@ public final class MecanumDriver implements IDriver {
 
         map.resetAngle();
         float currentAngle = (float) map.getAngle();
-        currentAngle = MathUtil.convert180to360(currentAngle);
         float firstAngle = currentAngle;
 
-        min = MathUtil.limit360(min + firstAngle);
-        max = MathUtil.limit360(max + firstAngle);
+        min = min + firstAngle;
+        max = max + firstAngle;
 
         DeviceMap map = DeviceMap.getInstance();
         LinearOpMode linear = null;
         if(map.getCurrentOpMode() instanceof AutoOpMode) {
             linear = (LinearOpMode) map.getCurrentOpMode();
         }
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("Settings: \n Direction: ");
+        builder.append(direction);
+        builder.append("\nStarting Angle: ");
+        builder.append(angle);
         while ((linear != null && linear.opModeIsActive()) && !(min <= currentAngle && currentAngle <= max)) {
 //            telemetry.addData(String.format(Locale.ENGLISH, "%f < %f < %f", min, currentAngle, max), "");
-//            telemetry.update();
+//            telemetry.update();f
+            builder.append("min: ");
+            builder.append(min);
+            builder.append(" current: ");
+            builder.append(currentAngle);
+            builder.append(" max: ");
+            builder.append(max);
+            builder.append('\n');
             currentAngle = (float) map.getAngle();
         }
+        RobotLog.d(builder.toString());
         stop();
     }
 

@@ -42,6 +42,7 @@ public class ImuAuto extends AutoOpMode {
     @Override
     public void run() {
         driver.turn(0.4, -90);
+        sleep(3000);
         driver.turn(0.4, -90);
         driver.turn(0.4, -90);
 

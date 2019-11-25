@@ -44,4 +44,9 @@ public enum Direction {
     public int getRightBottom() {
         return movement[3];
     }
+
+    @Override
+    public String toString() {
+        return this.name();
+    }
 }
