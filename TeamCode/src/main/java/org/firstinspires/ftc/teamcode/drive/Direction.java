@@ -49,4 +49,43 @@ public enum Direction {
     public String toString() {
         return this.name();
     }
+
+
+    /**
+     * Returns the indexes that are responsibly for pushing the robot from the left side
+     * Left Side Power > 0 --> Robot Turns Right
+     * Left Side Power < 0 --> Robot Turns Left
+     */
+    public int[] getLeftSide() {
+        switch (this) {
+            case BACKWARD:
+            case FORWARD:
+                return new int[]{0, 1};
+            case LEFT:
+                return new int[] {1, 2};
+            case RIGHT:
+                return new int[] {3, 0};
+            default:
+                throw new IllegalArgumentException("Nope, not allowed");
+        }
+    }
+
+    /**
+     * Returns the indexes that are responsibly for pushing the robot from the right side
+     * Right Side Power > 0 --> Robot Turns Left
+     * Right Side Power < 0 --> Robot Turns Right
+     */
+    public int[] getRightSide() {
+        switch (this) {
+            case BACKWARD:
+            case FORWARD:
+                return new int[]{1, 3};
+            case LEFT:
+                return new int[] {0, 3};
+            case RIGHT:
+                return new int[] {1, 2};
+            default:
+                throw new IllegalArgumentException("Nope, not allowed");
+        }
+    }
 }

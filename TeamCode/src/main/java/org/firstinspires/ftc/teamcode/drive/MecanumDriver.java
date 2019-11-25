@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import java.util.Locale;
 
 public final class MecanumDriver implements IDriver {
-    private static final float TURN_OFFSET = 7.5F;
+    private static final double TURN_OFFSET = 3F;
 
     private boolean test;
     private DeviceMap map;
@@ -51,14 +51,17 @@ public final class MecanumDriver implements IDriver {
         map.getLeftBottom().setPower(direction.getLeftBottom() * power);
     }
 
+    @Override
+    public void move(Direction direction, double power, double inches) {
+        move(direction, power, inches, false);
+    }
     /**
      * encoder drive
      * @param direction
      * @param power
      * @param inches
      */
-    @Override
-    public void move(Direction direction, double power, double inches) {
+    public void move(Direction direction, double power, double inches, boolean gyroAssist) {
         DcMotor leftTop = map.getLeftTop();
         DcMotor rightTop = map.getRightTop();
         DcMotor leftBottom = map.getLeftBottom();
@@ -90,12 +93,20 @@ public final class MecanumDriver implements IDriver {
         move(direction, power);
 
         DeviceMap map = DeviceMap.getInstance();
+        map.resetAngle();
+        double angle = map.getAngle();
         LinearOpMode linear = null;
         if(map.getCurrentOpMode() instanceof AutoOpMode) {
             linear = (LinearOpMode) map.getCurrentOpMode();
         }
+
+        double correctedPower = power * 0.9D;
         while((linear != null && linear.opModeIsActive()) && motorsBusy(leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget)) {
-            //move(direction, power);
+            if (gyroAssist){
+                if (angle > 0) gyroAssist(direction.getRightSide(), correctedPower);
+                else gyroAssist(direction.getLeftSide(), correctedPower);
+            }
+            angle = map.getAngle();
         }
 
         stop();
@@ -105,6 +116,14 @@ public final class MecanumDriver implements IDriver {
             motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
+
+    private void gyroAssist(int[] side, double power) {
+        for(int index : side) {
+            DcMotor motor = map.getDriveMotors()[index];
+            motor.setPower(power);
+        }
+    }
+
     public void move(AngleConverter angleConverter) {
         map.getLeftTop().setPower(angleConverter.getLeftTop());
         map.getRightTop().setPower(angleConverter.getRightTop());
