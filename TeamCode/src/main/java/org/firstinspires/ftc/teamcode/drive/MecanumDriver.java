@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import java.util.Locale;
 
 public final class MecanumDriver implements IDriver {
-    private static final float TURN_OFFSET = 1.0F;
+    private static final float TURN_OFFSET = 7.5F;
 
     private boolean test;
     private DeviceMap map;
@@ -183,9 +183,6 @@ public final class MecanumDriver implements IDriver {
         boolean boost;
         final double oneThird = 1D/3D;
         while ((linear != null && linear.opModeIsActive()) && !(min <= currentAngle && currentAngle <= max)) {
-            boost = Math.abs(angle) - 10D > currentAngle;
-            if(boost) move(direction, power * oneThird);
-            else move(direction, power);
             currentAngle = map.getAngle();
         }
         stop();
