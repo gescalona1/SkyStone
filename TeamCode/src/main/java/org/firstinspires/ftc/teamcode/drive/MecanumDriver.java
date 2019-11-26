@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import net.jafama.FastMath;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -85,10 +87,10 @@ public final class MecanumDriver implements IDriver {
         }
 
         //other calculations needed
-        int leftTopTarget = Math.abs(leftTop.getCurrentPosition() + (int) (calc * direction.getLeftTop()));
-        int rightTopTarget = Math.abs(rightTop.getCurrentPosition() + (int) (calc * direction.getRightTop()));
-        int leftBottomTarget = Math.abs(leftBottom.getCurrentPosition() + (int) (calc * direction.getLeftBottom()));
-        int rightBottomTarget = Math.abs(rightBottom.getCurrentPosition() + (int) (calc * direction.getRightBottom()));
+        int leftTopTarget = FastMath.abs(leftTop.getCurrentPosition() + (int) (calc * direction.getLeftTop()));
+        int rightTopTarget = FastMath.abs(rightTop.getCurrentPosition() + (int) (calc * direction.getRightTop()));
+        int leftBottomTarget = FastMath.abs(leftBottom.getCurrentPosition() + (int) (calc * direction.getLeftBottom()));
+        int rightBottomTarget = FastMath.abs(rightBottom.getCurrentPosition() + (int) (calc * direction.getRightBottom()));
 
         move(direction, power);
 
@@ -100,11 +102,17 @@ public final class MecanumDriver implements IDriver {
             linear = (LinearOpMode) map.getCurrentOpMode();
         }
 
-        double correctedPower = power * 0.9D;
         while((linear != null && linear.opModeIsActive()) && motorsBusy(leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget)) {
             if (gyroAssist){
-                if (angle > 0) gyroAssist(direction.getRightSide(), correctedPower);
-                else gyroAssist(direction.getLeftSide(), correctedPower);
+                double correctedPower = power * calculatePowerMultiplier(0, map.getAngle(), power);
+                if (angle > 0) {
+                    gyroAssist(direction.getRightSide(), correctedPower);
+                    gyroAssist(direction.getLeftSide(), power);
+                }
+                else if(angle < 0) {
+                    gyroAssist(direction.getLeftSide(), correctedPower);
+                    gyroAssist(direction.getRightSide(), power);
+                }
             }
             angle = map.getAngle();
         }
@@ -122,6 +130,20 @@ public final class MecanumDriver implements IDriver {
             DcMotor motor = map.getDriveMotors()[index];
             motor.setPower(power);
         }
+    }
+
+    /**
+     * See: https://www.desmos.com/calculator/tugir8g8tf
+     * @param expectedAngle
+     * @param currentAngle
+     * @param defaultPower
+     * @return
+     */
+    private double calculatePowerMultiplier(double expectedAngle, double currentAngle, double defaultPower) {
+        return defaultPower * (1D - 0.1D * FastMath.ceilToInt(FastMath.abs(expectedAngle - currentAngle)));
+    }
+    private double calculatePowerMultiplierLinear(double expectedAngle, double currentAngle, double defaultPower) {
+        return defaultPower * (1D - 0.1D * FastMath.abs(expectedAngle - currentAngle));
     }
 
     public void move(AngleConverter angleConverter) {
@@ -144,7 +166,7 @@ public final class MecanumDriver implements IDriver {
         }
         updateTelemetry();
         for(int i = 0; i < current.length; i++) {
-            if(Math.abs(current[i]) < target[i]) return true;
+            if(FastMath.abs(current[i]) < target[i]) return true;
         }
         return false;
     }
@@ -168,7 +190,7 @@ public final class MecanumDriver implements IDriver {
 
     @Override
     public void turn(double power, double angle) {
-        if(Math.abs(angle) > 180) {
+        if(FastMath.abs(angle) > 180) {
             //if it's more than +180 or less than -180, add towards 0: 180
             if(angle > 180) turn(power, angle - 180);
             else if(angle < -180) turn(power, angle + 180);
