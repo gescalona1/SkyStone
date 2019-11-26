@@ -9,10 +9,10 @@ public enum Direction {
     //or
     //LeftTop(0), RightTop (1)
     //LeftBottom(2), RightBottom (3)
-    FORWARD(1, 1, 1, 1),
-    LEFT(-1, 1, 1, -1),
-    RIGHT(1, -1, -1, 1),
-    BACKWARD(-1, -1, -1, -1),
+    FORWARD(new int[]{0, 2}, new int[]{1, 3},1, 1, 1, 1),
+    LEFT(new int[] {1, 2}, new int[] {0, 3},-1, 1, 1, -1),
+    RIGHT(new int[] {3, 4}, new int[] {1, 2}, 1, -1, -1, 1),
+    BACKWARD(new int[]{1, 3}, new int[]{0, 2}, -1, -1, -1, -1),
 
     UPPERLEFT(0, 1, 1, 0),
     UPPERRIGHT(1, 0, 0, 1),
@@ -23,7 +23,14 @@ public enum Direction {
     CLOCKWISE(1,-1, 1, -1);
 
     private int[] movement;
+    private int[] left;
+    private int[] right;
 
+    Direction(int[] left, int[] right, int... movement) {
+        this(movement);
+        this.left = left;
+        this.right = right;
+    }
     Direction(int... movement) {
         this.movement = movement;
     }
@@ -57,17 +64,7 @@ public enum Direction {
      * Left Side Power < 0 --> Robot Turns Left
      */
     public int[] getLeftSide() {
-        switch (this) {
-            case BACKWARD:
-            case FORWARD:
-                return new int[]{0, 1};
-            case LEFT:
-                return new int[] {1, 2};
-            case RIGHT:
-                return new int[] {3, 0};
-            default:
-                throw new IllegalArgumentException("Nope, not allowed");
-        }
+        return left;
     }
 
     /**
@@ -76,16 +73,6 @@ public enum Direction {
      * Right Side Power < 0 --> Robot Turns Right
      */
     public int[] getRightSide() {
-        switch (this) {
-            case BACKWARD:
-            case FORWARD:
-                return new int[]{1, 3};
-            case LEFT:
-                return new int[] {0, 3};
-            case RIGHT:
-                return new int[] {1, 2};
-            default:
-                throw new IllegalArgumentException("Nope, not allowed");
-        }
+        return right;
     }
 }
