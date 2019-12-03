@@ -104,15 +104,23 @@ public final class MecanumDriver implements IDriver {
 
         while((linear != null && linear.opModeIsActive()) && motorsBusy(leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget)) {
             if (gyroAssist){
-                double correctedPower = power * calculatePowerMultiplier(0, map.getAngle(), power);
-                if (angle > 0) {
-                    gyroAssist(direction.getRightSide(), correctedPower);
-                    gyroAssist(direction.getLeftSide(), power);
-                }
-                else if(angle < 0) {
-                    gyroAssist(direction.getLeftSide(), correctedPower);
+                double correctedPower = power * calculatePowerMultiplierLinear(0, map.getAngle(), power);
+                addData("angle", angle);
+                addData("power", power);
+                if (angle > 0.05) {
+                    addData("Increasing left side", correctedPower);
                     gyroAssist(direction.getRightSide(), power);
+                    gyroAssist(direction.getLeftSide(), correctedPower);
+                } else if(angle < -0.05) {
+                    addData("Increasing right side", correctedPower);
+                    gyroAssist(direction.getLeftSide(), power);
+                    gyroAssist(direction.getRightSide(), correctedPower);
+                }else {
+                    addData("normal", "side");
+                    move(direction, power);
                 }
+                updateTelemetry();
+
             }
             angle = map.getAngle();
         }
