@@ -170,10 +170,6 @@ public final class MecanumDriver implements IDriver {
         int[] current = new int[] { leftTop.getCurrentPosition(), rightTop.getCurrentPosition(), leftBottom.getCurrentPosition(), rightBottom.getCurrentPosition()};
         int[] target = new int[] { leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget };
         for(int i = 0; i < current.length; i++) {
-            addData("current: " + current[i], "target: " + target[i]);
-        }
-        updateTelemetry();
-        for(int i = 0; i < current.length; i++) {
             if(FastMath.abs(current[i]) < target[i]) return true;
         }
         return false;
