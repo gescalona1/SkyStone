@@ -104,12 +104,12 @@ public final class MecanumDriver implements IDriver {
 
         while((linear != null && linear.opModeIsActive()) && motorsBusy(leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget)) {
             if (gyroAssist){
-                double correctedPower = power * calculatePowerMultiplier(0, map.getAngle(), power);
-                if (angle > 0) {
+                double correctedPower = (1D + power) / 2;
+                if (angle > 0.1) {
                     gyroAssist(direction.getRightSide(), correctedPower);
                     gyroAssist(direction.getLeftSide(), power);
                 }
-                else if(angle < 0) {
+                else if(angle < -0.1) {
                     gyroAssist(direction.getLeftSide(), correctedPower);
                     gyroAssist(direction.getRightSide(), power);
                 }
@@ -140,7 +140,7 @@ public final class MecanumDriver implements IDriver {
      * @return
      */
     private double calculatePowerMultiplier(double expectedAngle, double currentAngle, double defaultPower) {
-        return defaultPower * (1D - 0.1D * FastMath.ceilToInt(FastMath.abs(expectedAngle - currentAngle)));
+        return 1D - 0.1D * FastMath.ceilToInt(FastMath.abs(expectedAngle - currentAngle));
     }
     private double calculatePowerMultiplierLinear(double expectedAngle, double currentAngle, double defaultPower) {
         return defaultPower * (1D - 0.1D * FastMath.abs(expectedAngle - currentAngle));

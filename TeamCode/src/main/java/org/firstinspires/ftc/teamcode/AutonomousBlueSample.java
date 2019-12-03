@@ -35,7 +35,7 @@ public class AutonomousBlueSample extends AutoPart1 {
         if (pos == Status.LEFT_CORNER){
             driver.move(Direction.LEFT, 0.6, 10);
         }
-        driver.move(Direction.FORWARD, 0.6, 10);
+        driver.move(Direction.FORWARD, 0.3, 10);
         if (pos == Status.LEFT_CORNER || pos == Status.MIDDLE){
             map.getLeftAuto().setPosition(0);
         } else {
@@ -53,27 +53,28 @@ public class AutonomousBlueSample extends AutoPart1 {
 
         //goes back to pick up the next skystone
         if (pos == Status.LEFT_CORNER || pos == Status.MIDDLE){
-            driver.move(Direction.BACKWARD, 0.6, 38); //Inches value will need to be fixed
+            driver.move(Direction.BACKWARD, 0.6, 39); //Inches value will need to be fixed
         } else {
             driver.move(Direction.BACKWARD, 0.6, 46); //Inches value will need to be fixed
         }
         driver.turn(0.3, -90);
-        driver.move(Direction.FORWARD, 0.6, 12);
+        driver.move(Direction.FORWARD, 0.3, 15);
         map.getRightAuto().setPosition(1);
         sleep(200);
-        driver.move(Direction.BACKWARD, 0.6, 12);
+        driver.move(Direction.BACKWARD, 0.3, 15);
         driver.turn(0.3, 90);
 
         //drives past bridge, drops, then parks
-        driver.move(Direction.FORWARD, 0.5, 50);
+        driver.move(Direction.FORWARD, 0.6, 50);
         map.getLeftAuto().setPosition(0.4);
         map.getRightAuto().setPosition(0.4);
+        driver.move(Direction.RIGHT, 0.6, 3);
         if (pos == Status.LEFT_CORNER){
-            driver.move(Direction.BACKWARD, 0.5, 2); //Inches value will need to be fixed
+            driver.move(Direction.BACKWARD, 0.6, 18); //Inches value will need to be fixed
         } else if (pos == Status.MIDDLE){
-            driver.move(Direction.BACKWARD, 0.5, 10); //Inches value will need to be fixed
+            driver.move(Direction.BACKWARD, 0.6, 18); //Inches value will need to be fixed
         } else {
-            driver.move(Direction.BACKWARD, 0.5, 18); //Inches value will need to be fixed
+            driver.move(Direction.BACKWARD, 0.6, 18); //Inches value will need to be fixed
         }
         //should be parked
     }
