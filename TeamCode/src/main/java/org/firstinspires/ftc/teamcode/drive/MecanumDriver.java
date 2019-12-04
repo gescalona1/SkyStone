@@ -16,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.DeviceMap;
 import org.firstinspires.ftc.teamcode.monitor.MonitorIMU;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
+import org.openftc.revextensions2.RevBulkData;
 
 import java.util.Locale;
 
@@ -64,11 +65,6 @@ public final class MecanumDriver implements IDriver {
      * @param inches
      */
     public void move(Direction direction, double power, double inches, boolean gyroAssist) {
-        DcMotor leftTop = map.getLeftTop();
-        DcMotor rightTop = map.getRightTop();
-        DcMotor leftBottom = map.getLeftBottom();
-        DcMotor rightBottom = map.getRightBottom();
-
         /*
         if((direction == Direction.LEFT) || (direction == Direction.RIGHT)){
             inches *= (1D / 0.7D);
@@ -86,33 +82,39 @@ public final class MecanumDriver implements IDriver {
             motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
+        int[] current = getMotorCounts();
         //other calculations needed
-        int leftTopTarget = FastMath.abs(leftTop.getCurrentPosition() + (int) (calc * direction.getLeftTop()));
-        int rightTopTarget = FastMath.abs(rightTop.getCurrentPosition() + (int) (calc * direction.getRightTop()));
-        int leftBottomTarget = FastMath.abs(leftBottom.getCurrentPosition() + (int) (calc * direction.getLeftBottom()));
-        int rightBottomTarget = FastMath.abs(rightBottom.getCurrentPosition() + (int) (calc * direction.getRightBottom()));
+        int leftTopTarget = FastMath.abs(current[0] + (int) (calc * direction.getLeftTop()));
+        int rightTopTarget = FastMath.abs(current[1] + (int) (calc * direction.getRightTop()));
+        int leftBottomTarget = FastMath.abs(current[2] + (int) (calc * direction.getLeftBottom()));
+        int rightBottomTarget = FastMath.abs(current[3] + (int) (calc * direction.getRightBottom()));
 
         move(direction, power);
 
-        DeviceMap map = DeviceMap.getInstance();
-        map.resetAngle();
-        double angle = map.getAngle();
+        double angle = 0, initialAngle = 0;
+        if(gyroAssist) {
+            DeviceMap map = DeviceMap.getInstance();
+            map.resetAngle();
+            angle = map.getAngle();
+            initialAngle = angle;
+        }
         LinearOpMode linear = null;
         if(map.getCurrentOpMode() instanceof AutoOpMode) {
             linear = (LinearOpMode) map.getCurrentOpMode();
+            if(linear == null) return;
         }
-
-        while((linear != null && linear.opModeIsActive()) && motorsBusy(leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget)) {
+        while(linear.opModeIsActive() && motorsBusy(leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget)) {
             if (gyroAssist){
-                double correctedPower = power * calculatePowerMultiplierLinear(0, map.getAngle(), power);
+                double correctedPower = power * calculatePowerMultiplierLinear(0, angle, power);
+                addData("initial angle", initialAngle);
                 addData("angle", angle);
                 addData("power", power);
-                if (angle > 0.05) {
-                    addData("Increasing left side", correctedPower);
+                if (angle > initialAngle + 2) {
+                    addData("Increasing right side", correctedPower);
                     gyroAssist(direction.getRightSide(), power);
                     gyroAssist(direction.getLeftSide(), correctedPower);
-                } else if(angle < -0.05) {
-                    addData("Increasing right side", correctedPower);
+                } else if(angle < initialAngle - 2) {
+                    addData("Increasing left side", correctedPower);
                     gyroAssist(direction.getLeftSide(), power);
                     gyroAssist(direction.getRightSide(), correctedPower);
                 }else {
@@ -162,17 +164,23 @@ public final class MecanumDriver implements IDriver {
     }
 
     public boolean motorsBusy(int leftTopTarget, int rightTopTarget, int leftBottomTarget, int rightBottomTarget) {
-        DcMotor leftTop = map.getLeftTop();
-        DcMotor rightTop = map.getRightTop();
-        DcMotor leftBottom = map.getLeftBottom();
-        DcMotor rightBottom = map.getRightBottom();
-
-        int[] current = new int[] { leftTop.getCurrentPosition(), rightTop.getCurrentPosition(), leftBottom.getCurrentPosition(), rightBottom.getCurrentPosition()};
+        int[] current = getMotorCounts();
         int[] target = new int[] { leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget };
         for(int i = 0; i < current.length; i++) {
             if(FastMath.abs(current[i]) < target[i]) return true;
         }
         return false;
+    }
+
+    public int[] getMotorCounts() {
+        RevBulkData data = map.getExpansionHub().getBulkInputData();
+
+        int leftTop = data.getMotorCurrentPosition(map.getLeftTop());
+        int rightTop = data.getMotorCurrentPosition(map.getRightTop());
+        int leftBottom = data.getMotorCurrentPosition(map.getLeftBottom());
+        int rightBottom = data.getMotorCurrentPosition(map.getRightBottom());
+
+        return new int[] { leftTop, rightTop, leftBottom, rightBottom};
     }
     /**
      * Updated mecanum drive function this year (math is ? ?? ? )

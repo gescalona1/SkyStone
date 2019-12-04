@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.monitor.MonitorIMU;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.openftc.revextensions2.ExpansionHubEx;
+import org.openftc.revextensions2.RevBulkData;
 
 import java.util.Locale;
 
@@ -25,21 +27,21 @@ public class SensorTest extends AutoOpMode {
 
     @Override
     public void beforeLoop() {
-        for(DcMotor motor : driver.getMotors())
-            telemetry.addLine("Motor: " + motor.getCurrentPosition());
+        ExpansionHubEx hub = DeviceMap.getInstance().getExpansionHub();
+        RevBulkData bulkData = hub.getBulkInputData();
+        for(DcMotor motor : driver.getMotors()) {
+            telemetry.addLine("Motor Position: " + bulkData.getMotorCurrentPosition(motor));
+        }
         float[] floats = MonitorIMU.getXYZAngle();
         telemetry.addLine(String.format(Locale.ENGLISH, "Angles: %f %f %f", floats[0], floats[1], floats[2]));
-        telemetry.update();
 
+
+        telemetry.addData("Current I2C Bus Power Draw:", hub.getI2cBusCurrentDraw(ExpansionHubEx.CurrentDrawUnits.AMPS));
+        telemetry.update();
     }
 
     @Override
     public void run() {
-        for(DcMotor motor : driver.getMotors())
-            telemetry.addLine("Motor: " + motor.getCurrentPosition());
-        float[] floats = MonitorIMU.getXYZAngle();
-        telemetry.addLine(String.format(Locale.ENGLISH, "Angles: %f %f %f", floats[0], floats[1], floats[2]));
-        telemetry.update();
 
     }
 }
