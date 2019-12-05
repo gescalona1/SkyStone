@@ -21,7 +21,7 @@ import org.openftc.revextensions2.RevBulkData;
 import java.util.Locale;
 
 public final class MecanumDriver implements IDriver {
-    private static final double TURN_OFFSET = 3F;
+    private static final double TURN_OFFSET = 1F;
 
     private boolean test;
     private DeviceMap map;
@@ -38,6 +38,18 @@ public final class MecanumDriver implements IDriver {
         this.map = DeviceMap.getInstance();
         this.motors = map.getDriveMotors();
         this.test = true;
+    }
+
+    public void append(Direction direction, double power) {
+        DcMotor leftTop = map.getLeftTop();
+        DcMotor rightTop = map.getRightTop();
+        DcMotor leftBottom = map.getLeftBottom();
+        DcMotor rightBottom = map.getRightBottom();
+
+        leftTop.setPower(leftTop.getPower() + direction.getLeftTop() * power);
+        rightTop.setPower(rightTop.getPower() + direction.getRightTop() * power);
+        leftBottom.setPower(leftBottom.getPower() + direction.getLeftBottom() * power);
+        rightBottom.setPower(rightBottom.getPower() + direction.getRightBottom() * power);
     }
 
     /**
@@ -89,8 +101,6 @@ public final class MecanumDriver implements IDriver {
         int leftBottomTarget = FastMath.abs(current[2] + (int) (calc * direction.getLeftBottom()));
         int rightBottomTarget = FastMath.abs(current[3] + (int) (calc * direction.getRightBottom()));
 
-        move(direction, power);
-
         double angle = 0, initialAngle = 0;
         if(gyroAssist) {
             DeviceMap map = DeviceMap.getInstance();
@@ -103,6 +113,8 @@ public final class MecanumDriver implements IDriver {
             linear = (LinearOpMode) map.getCurrentOpMode();
             if(linear == null) return;
         }
+        move(direction, power);
+
         while(linear.opModeIsActive() && motorsBusy(leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget)) {
             if (gyroAssist){
                 double correctedPower = power * calculatePowerMultiplierLinear(0, angle, power);
@@ -220,7 +232,6 @@ public final class MecanumDriver implements IDriver {
 
         move(direction, power);
 
-        map.resetAngle();
         double currentAngle = map.getAngle();
         double firstAngle = currentAngle;
 

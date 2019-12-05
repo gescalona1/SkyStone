@@ -32,15 +32,19 @@ package org.firstinspires.ftc.teamcode.opmode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
 import org.firstinspires.ftc.teamcode.DeviceMap;
+import org.firstinspires.ftc.teamcode.Ultro;
 import org.firstinspires.ftc.teamcode.drive.Direction;
 import org.firstinspires.ftc.teamcode.drive.IActive;
 import org.firstinspires.ftc.teamcode.drive.MecanumDriver;
+import org.firstinspires.ftc.teamcode.imu.UltroImu;
 import org.firstinspires.ftc.teamcode.monitor.MonitorIMU;
 import org.firstinspires.ftc.teamcode.monitor.MonitorManager;
 
@@ -77,6 +81,7 @@ public abstract class AutoOpMode extends LinearOpMode implements IActive {
         mapper.setCurrentOpMode(this);
         mapper.setTelemetry(telemetry);
         setup(mapper);
+        Ultro.imuNotif.setUp();
 
         driver = new MecanumDriver();
         driver.setTelemetry(telemetry);
@@ -95,10 +100,6 @@ public abstract class AutoOpMode extends LinearOpMode implements IActive {
         map.deactivateTfod();
         map.deactivateOpenCV();
         map.deactivateVuforia();
-
-        if(map.getImu() != null)
-            map.getImu().stopAccelerationIntegration();
-
 
     }
 
@@ -121,11 +122,13 @@ public abstract class AutoOpMode extends LinearOpMode implements IActive {
         waitForStart();
         runtime.reset();
 
+        Ultro.imuNotif.start();
         run();
 
 
         // run until the end of the match (driver presses STOP)
         afterStop();
+        Ultro.imuNotif.stop();
     }
 
     public abstract void beforeLoop();
