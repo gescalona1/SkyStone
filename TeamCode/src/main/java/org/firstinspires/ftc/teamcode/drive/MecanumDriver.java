@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.DeviceMap;
+import org.firstinspires.ftc.teamcode.Ultro;
 import org.firstinspires.ftc.teamcode.monitor.MonitorIMU;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import org.openftc.revextensions2.RevBulkData;
@@ -104,8 +105,8 @@ public final class MecanumDriver implements IDriver {
         double angle = 0, initialAngle = 0;
         if(gyroAssist) {
             DeviceMap map = DeviceMap.getInstance();
-            map.resetAngle();
-            angle = map.getAngle();
+            Ultro.imuNotif.resetAngle();
+            angle = Ultro.imuNotif.getAngle();
             initialAngle = angle;
         }
         LinearOpMode linear = null;
@@ -136,7 +137,7 @@ public final class MecanumDriver implements IDriver {
                 updateTelemetry();
 
             }
-            angle = map.getAngle();
+            angle = Ultro.imuNotif.getAngle();
         }
 
         stop();
@@ -232,7 +233,7 @@ public final class MecanumDriver implements IDriver {
 
         move(direction, power);
 
-        double currentAngle = map.getAngle();
+        double currentAngle = Ultro.imuNotif.getAngle();
         double firstAngle = currentAngle;
 
         min = min + firstAngle;
@@ -247,13 +248,13 @@ public final class MecanumDriver implements IDriver {
         boolean boost;
         final double oneThird = 1D/3D;
         while ((linear != null && linear.opModeIsActive()) && !(min <= currentAngle && currentAngle <= max)) {
-            currentAngle = map.getAngle();
+            currentAngle = Ultro.imuNotif.getAngle();
         }
         stop();
     }
 
     public void turnOrigin(double power) {
-        double angle = map.getAngle();
+        double angle = Ultro.imuNotif.getAngle();
         turn(power, angle);
     }
 

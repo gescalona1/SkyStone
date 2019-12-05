@@ -3,19 +3,19 @@ package org.firstinspires.ftc.teamcode.imu;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
-import com.qualcomm.robotcore.util.RobotLog;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
-import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
 import org.firstinspires.ftc.teamcode.DeviceMap;
 
-public class UltroImu implements OpModeManagerNotifier.Notifications, Runnable {
-    private boolean running;
+public class UltroImu implements Runnable {
     private Thread t;
     private BNO055IMU imu;
 
+    private Orientation lastAngles;
+    private double globalAngle;
     private double roll = 0, pitch = 0, yaw = 0;
 
     public UltroImu() {
@@ -24,16 +24,17 @@ public class UltroImu implements OpModeManagerNotifier.Notifications, Runnable {
 
     public void setUp() {
         this.imu = DeviceMap.getInstance().getImu();
+        lastAngles = getOrientation();
     }
     public void start() {
         t = new Thread(this);
-        this.running = true;
         t.start();
     }
     public void stop() {
-        this.running = false;
+
     }
-    public void updateAngles(){
+
+    private void updateAngles(){
         Quaternion quatAngles = imu.getQuaternionOrientation();
 
         double w = quatAngles.w;
@@ -45,41 +46,42 @@ public class UltroImu implements OpModeManagerNotifier.Notifications, Runnable {
         pitch = Math.asin( 2*(w*y - x*z) ) * 180.0 / Math.PI;
         yaw = Math.atan2( 2*(w*z + x*y), 1 - (2*(y*y + z*z)) ) * 180.0 / Math.PI;
     }
+    private void updateAngles2() {
+        Orientation angles = getOrientation();
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+    }
 
     @Override
     public void run() {
         while(isRunning()) {
-            updateAngles();
+            updateAngles2();
         }
         t.interrupt();
     }
 
-    @Override
-    public void onOpModePreInit(OpMode opMode) {
-        if(opMode instanceof OpModeManagerImpl.DefaultOpMode) return;
-            opMode.telemetry.addData("Test", "ya1");
-        opMode.telemetry.update();
-        if(opMode instanceof LinearOpMode) t = new Thread(this);
+    public double getAngle() {
+        return globalAngle;
     }
 
-    @Override
-    public void onOpModePreStart(OpMode opMode) {
-        if(opMode instanceof OpModeManagerImpl.DefaultOpMode) return;
-        opMode.telemetry.addData("Test", "ya2");
-        opMode.telemetry.update();
-        if(opMode instanceof LinearOpMode) {
-            this.setUp();
-            if(t == null) t = new Thread(this);
-            t.start();
-        }
+    public void resetAngle() {
+        lastAngles = getOrientation();
+        globalAngle = 0;
     }
 
-    @Override
-    public void onOpModePostStop(OpMode opMode) {
-        if(opMode instanceof OpModeManagerImpl.DefaultOpMode) return;
-        opMode.telemetry.addData("Test", "ya3");
-        opMode.telemetry.update();
-        running = false;
+
+    private Orientation getOrientation() {
+        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     }
 
     public double getRoll() {
