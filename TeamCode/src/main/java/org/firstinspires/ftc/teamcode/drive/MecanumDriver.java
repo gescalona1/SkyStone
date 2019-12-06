@@ -180,16 +180,16 @@ public final class MecanumDriver implements IDriver {
         return false;
     }
 
-//    public int[] getMotorCounts() {
-//        RevBulkData data = map.getExpansionHub().getBulkInputData();
-//
-//        int leftTop = data.getMotorCurrentPosition(map.getLeftTop());
-//        int rightTop = data.getMotorCurrentPosition(map.getRightTop());
-//        int leftBottom = data.getMotorCurrentPosition(map.getLeftBottom());
-//        int rightBottom = data.getMotorCurrentPosition(map.getRightBottom());
-//
-//        return new int[] { leftTop, rightTop, leftBottom, rightBottom};
-//    }
+    public int[] getMotorCounts() {
+        RevBulkData data = map.getExpansionHub().getBulkInputData();
+
+        int leftTop = data.getMotorCurrentPosition(map.getLeftTop());
+        int rightTop = data.getMotorCurrentPosition(map.getRightTop());
+        int leftBottom = data.getMotorCurrentPosition(map.getLeftBottom());
+        int rightBottom = data.getMotorCurrentPosition(map.getRightBottom());
+
+        return new int[] { leftTop, rightTop, leftBottom, rightBottom};
+    }
     /**
      * Updated mecanum drive function this year (math is ? ?? ? )
      * @param left_stick_x gamepadleftX
