@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.DeviceMap;
 import org.firstinspires.ftc.teamcode.Ultro;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
+import org.openftc.revextensions2.RevBulkData;
 //import org.openftc.revextensions2.RevBulkData;
 
 import java.util.LinkedHashSet;
