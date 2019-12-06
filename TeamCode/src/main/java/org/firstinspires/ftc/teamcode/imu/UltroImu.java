@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.imu;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.BNO055IMUImpl;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -65,12 +66,13 @@ public class UltroImu implements Runnable {
     @Override
     public void run() {
         while(isRunning()) {
-            updateAngles2();
+            //updateAngles2();
         }
         t.interrupt();
     }
 
     public double getAngle() {
+        updateAngles2();
         return globalAngle;
     }
 

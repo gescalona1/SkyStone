@@ -123,6 +123,7 @@ public abstract class AutoOpMode extends LinearOpMode implements IActive {
         runtime.reset();
 
         Ultro.imuNotif.start();
+        Ultro.imuNotif.resetAngle();
         run();
 
 

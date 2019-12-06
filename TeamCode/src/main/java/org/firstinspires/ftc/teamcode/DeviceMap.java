@@ -169,24 +169,23 @@ public final class DeviceMap {
 
     }
     public /*CompletableFuture<Void>*/void setUpImu(HardwareMap map) {
+        expansionHub.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.STANDARD_100K);
         //return CompletableFuture.runAsync(() -> {
 
             telemetry.addLine("Setting up imu");
             telemetry.update();
             imu = map.get( BNO055IMUImpl.class, "imu");
-            imu.resetDeviceConfigurationForOpMode();
+
             BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
             parameters.useExternalCrystal = true;
             parameters.mode = BNO055IMU.SensorMode.IMU;
             parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
             parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+
             parameters.loggingEnabled = true;
 
             imu.initialize(parameters);
 
-
-
-            DeviceMap dmap = getInstance();
             LinearOpMode linear = null;
             if(getCurrentOpMode() instanceof AutoOpMode) {
                 linear = (LinearOpMode) getCurrentOpMode();
