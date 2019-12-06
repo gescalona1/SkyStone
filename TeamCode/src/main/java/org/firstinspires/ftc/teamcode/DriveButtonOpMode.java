@@ -180,7 +180,6 @@ public class DriveButtonOpMode extends DriveOpMode {
      */
     @Override
     public void stop() {
-        MonitorManager.stopAll();
     }
 
     protected void addData(String header, Object value) {

@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.DeviceMap;
 import org.firstinspires.ftc.teamcode.monitor.MonitorIMU;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import org.openftc.revextensions2.RevBulkData;
+//import org.openftc.revextensions2.RevBulkData;
 
 import java.util.Locale;
 
@@ -69,7 +70,6 @@ public final class MecanumDriver implements IDriver {
         if((direction == Direction.LEFT) || (direction == Direction.RIGHT)){
             inches *= (1D / 0.7D);
         }else if(direction == Direction.FORWARD || direction == Direction.BACKWARD) {
-
          */
         inches -= 3.5D;
         //}
@@ -294,7 +294,7 @@ public final class MecanumDriver implements IDriver {
     public void setTest(boolean test) {
         this.test = test;
     }
-    
+
     public void addData(String header, Object value) {
         if(test) telemetry.addData(header, value);
     }
