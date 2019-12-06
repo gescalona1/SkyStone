@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import android.content.Context;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.BNO055IMUImpl;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
@@ -16,17 +16,10 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcontroller.ultro.listener.UltroVuforia;
-import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-import org.firstinspires.ftc.teamcode.imu.UltroImu;
-import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.revextensions2.ExpansionHubEx;
@@ -56,7 +49,7 @@ public final class DeviceMap {
     private Servo leftAuto, rightAuto, leftBat, rightBat;
     private Servo[] servos;
 
-    private BNO055IMUImpl imu = null;
+    private BNO055IMU imu = null;
     private Orientation lastAngles;
     private double globalAngle = 0;
 
@@ -169,23 +162,25 @@ public final class DeviceMap {
 
     }
     public /*CompletableFuture<Void>*/void setUpImu(HardwareMap map) {
-        expansionHub.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.STANDARD_100K);
+        //expansionHub.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.STANDARD_100K);
         //return CompletableFuture.runAsync(() -> {
 
             telemetry.addLine("Setting up imu");
             telemetry.update();
-            imu = map.get( BNO055IMUImpl.class, "imu");
+            imu = map.get(BNO055IMU.class, "imu");
 
             BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-            parameters.useExternalCrystal = true;
-            parameters.mode = BNO055IMU.SensorMode.IMU;
-            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
 
-            parameters.loggingEnabled = true;
+            parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+            parameters.loggingEnabled      = true;
+            parameters.loggingTag          = "IMU";
+            parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
             imu.initialize(parameters);
 
+            /*
             LinearOpMode linear = null;
             if(getCurrentOpMode() instanceof AutoOpMode) {
                 linear = (LinearOpMode) getCurrentOpMode();
@@ -196,6 +191,8 @@ public final class DeviceMap {
                 telemetry.update();
             }
             telemetry.addData("calibrated", imu.isGyroCalibrated());
+
+             */
         //}, service);
     }
 
@@ -329,7 +326,7 @@ public final class DeviceMap {
         return allMotors;
     }
 
-    public BNO055IMUImpl getImu() {
+    public BNO055IMU getImu() {
         return imu;
     }
     public VuforiaLocalizer getVuforia() {

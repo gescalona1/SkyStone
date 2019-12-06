@@ -88,9 +88,6 @@ public abstract class AutoOpMode extends LinearOpMode implements IActive {
 
         addData("Status", "Initialized");
 
-        if(mapper.getImu() != null)
-            mapper.getImu().resetDeviceConfigurationForOpMode();
-
         updateTelemetry();
     }
 

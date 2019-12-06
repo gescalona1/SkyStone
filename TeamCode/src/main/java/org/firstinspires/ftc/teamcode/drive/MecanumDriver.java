@@ -18,8 +18,7 @@ import java.util.Locale;
 import java.util.Set;
 
 public final class MecanumDriver implements IDriver {
-    private boolean firstTime = true;
-    private static final double TURN_OFFSET = 1F;
+    private static final double TURN_OFFSET = 2.5F;
 
     private boolean test;
     private DeviceMap map;
@@ -35,7 +34,6 @@ public final class MecanumDriver implements IDriver {
     public MecanumDriver() {
         this.map = DeviceMap.getInstance();
         this.motors = map.getDriveMotors();
-        this.firstTime = true;
         this.test = true;
     }
 
@@ -218,10 +216,6 @@ public final class MecanumDriver implements IDriver {
             if(angle > 180) turn(power, angle - 180);
             else if(angle < -180) turn(power, angle + 180);
             return;
-        }
-        if(firstTime) {
-            angle += 6;
-            firstTime = false;
         }
         Direction direction = angle > 0 ? Direction.CLOCKWISE : Direction.COUNTERCLOCKWISE;
 
