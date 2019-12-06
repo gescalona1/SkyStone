@@ -102,16 +102,20 @@ public final class MecanumDriver implements IDriver {
             linear = (LinearOpMode) map.getCurrentOpMode();
         }
 
+        long time = System.nanoTime();
         while((linear != null && linear.opModeIsActive()) && motorsBusy(leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget)) {
             if (gyroAssist){
-                double correctedPower = power * calculatePowerMultiplierLinear(0, map.getAngle(), power);
+                long temp = System.nanoTime();
+                long deltaTime = temp - time;
+                time = temp;
+                double correctedPower = power * calculatePowerMultiplierLinear(0, angle, power);
                 addData("angle", angle);
                 addData("power", power);
-                if (angle > 0.05) {
+                if (angle > 5) {
                     addData("Increasing left side", correctedPower);
                     gyroAssist(direction.getRightSide(), power);
                     gyroAssist(direction.getLeftSide(), correctedPower);
-                } else if(angle < -0.05) {
+                } else if(angle < -5) {
                     addData("Increasing right side", correctedPower);
                     gyroAssist(direction.getLeftSide(), power);
                     gyroAssist(direction.getRightSide(), correctedPower);
@@ -119,8 +123,9 @@ public final class MecanumDriver implements IDriver {
                     addData("normal", "side");
                     move(direction, power);
                 }
-                updateTelemetry();
 
+                addData("delta", deltaTime);
+                updateTelemetry();
             }
             angle = map.getAngle();
         }

@@ -126,7 +126,7 @@ public abstract class DriveOpMode extends OpMode {
 
         Servo right = map.getRightAuto();
         if(gamepad1.a) {
-            right.setPosition(0.4);
+            right.setPosition(1);
         }
 
         if(gamepad1.x) {
