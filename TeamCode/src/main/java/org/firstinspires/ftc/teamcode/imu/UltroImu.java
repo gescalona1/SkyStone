@@ -66,13 +66,12 @@ public class UltroImu implements Runnable {
     @Override
     public void run() {
         while(isRunning()) {
-            //updateAngles2();
+            updateAngles2();
         }
         t.interrupt();
     }
 
     public double getAngle() {
-        updateAngles2();
         return globalAngle;
     }
 

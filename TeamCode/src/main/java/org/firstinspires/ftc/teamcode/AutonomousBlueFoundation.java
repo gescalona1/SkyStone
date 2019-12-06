@@ -3,12 +3,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.drive.Direction;
 
 @Autonomous(name = "AutoBlueFoundation")
-public class AutonomousBlueFoundation extends AutoPart1{
-    @Override
-    public void beforeLoop(){
-
-    }
-
+public class AutonomousBlueFoundation extends AutoPart1 {
     @Override
     public void run(){
         DeviceMap map = DeviceMap.getInstance();

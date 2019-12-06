@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.other;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.DeviceMap;
 import org.firstinspires.ftc.teamcode.drive.Direction;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 
@@ -29,6 +30,6 @@ public class GryoDriveTest2 extends AutoOpMode {
 
     @Override
     public void run() {
-        driver.move(Direction.FORWARD, 0.1, 48);
+        driver.move(Direction.FORWARD, 0.5, 48);
     }
 }

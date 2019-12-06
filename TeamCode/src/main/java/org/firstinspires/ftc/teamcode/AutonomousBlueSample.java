@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import android.os.AsyncTask;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.vuforia.State;
 import com.vuforia.TrackableResult;
 
 import org.firstinspires.ftc.teamcode.drive.Direction;
 import org.firstinspires.ftc.teamcode.monitor.MonitorManager;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
+import org.firstinspires.ftc.teamcode.skystone.Status;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
@@ -25,6 +27,13 @@ public class AutonomousBlueSample extends AutoPart1 {
 
     @Override
     public void run() {
+
+        singleSample();
+        park();
+        //should be parked
+    }
+
+    public void singleSample() {
         DeviceMap map = DeviceMap.getInstance();
         telemetry.addData("Saved Status", pos);
         //moves forward then aligns with the wall
@@ -46,35 +55,14 @@ public class AutonomousBlueSample extends AutoPart1 {
 
         //turns and drives past bridge
         driver.turn(0.3, 90);
-        driver.move(Direction.BACKWARD, 0.6, 5);
-        driver.move(Direction.FORWARD, 0.6, 50);
         driver.move(Direction.RIGHT, 0.5, 8);
-        driver.move(Direction.FORWARD, 0.6, 20);
+        driver.move(Direction.BACKWARD, 0.6, 5);
+        driver.move(Direction.FORWARD, 0.6, 72, true);
         map.getLeftAuto().setPosition(1);
         map.getRightAuto().setPosition(0);
+    }
 
-//        //goes back to pick up the next skystone
-//        if (pos == Status.LEFT_CORNER || pos == Status.MIDDLE){
-//            driver.move(Direction.BACKWARD, 0.6, 30); //Inches value will need to be fixed
-//            driver.move(Direction.LEFT, 0.5, 8);
-//            driver.move(Direction.BACKWARD, 0.6, 9); //Inches value will need to be fixed
-//        } else {
-//            driver.move(Direction.BACKWARD, 0.6, 30); //Inches value will need to be fixed
-//            driver.move(Direction.LEFT, 0.5, 8);
-//            driver.move(Direction.BACKWARD, 0.6, 16); //Inches value will need to be fixed
-//        }
-//        driver.turn(0.3, -90);
-//        driver.move(Direction.FORWARD, 0.3, 15);
-//        map.getRightAuto().setPosition(1);
-//        sleep(200);
-//        driver.move(Direction.BACKWARD, 0.3, 15);
-//        driver.turn(0.3, 90);
-//
-//        //drives past bridge, drops, then parks
-//        driver.move(Direction.FORWARD, 0.6, 50);
-//        map.getLeftAuto().setPosition(1);
-//        map.getRightAuto().setPosition(0);
-//        driver.move(Direction.RIGHT, 0.6, 3);
+    public void park() {
         if (pos == Status.LEFT_CORNER){
             driver.move(Direction.BACKWARD, 0.6, 18); //Inches value will need to be fixed
         } else if (pos == Status.MIDDLE){
@@ -82,6 +70,5 @@ public class AutonomousBlueSample extends AutoPart1 {
         } else {
             driver.move(Direction.BACKWARD, 0.6, 18); //Inches value will need to be fixed
         }
-        //should be parked
     }
 }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.skystone;
 
 import android.content.res.Configuration;
 import android.graphics.drawable.GradientDrawable;
@@ -182,6 +182,29 @@ public class SkystonePipeline extends OpenCvPipeline {
             default:
                 return input;
         }
+    }
+
+    public Status skystone() {
+        int left = SkystonePipeline.getValLeft();
+        int center = SkystonePipeline.getValMid();
+        int right = SkystonePipeline.getValRight();
+
+        if(left == center && center == right) {
+            if(right == 0) return Status.NOT_SEEN;
+            else if(right == 255) return Status.ALL_YELLOW;
+        }
+
+        if(left == 255 && center == 0 && right == 255)
+            return Status.MIDDLE;
+
+        if(center == 255) {
+            if(left == 0 && right == 255)
+                return Status.LEFT_CORNER;
+            if(left == 255 && right == 0)
+                return Status.RIGHT_CORNER;
+        }
+
+        return Status.NOT_SEEN;
     }
 
 }

@@ -112,33 +112,33 @@ public class DriveButtonOpMode extends DriveOpMode {
         buttons.addAll(Arrays.asList(
             builder.setGetter(() -> gamepad1.b)
                 .setbFunction(() -> {
-                    left.setPosition(left.getPosition() - 0.1D);
+                    left.setPosition(0.4);
                 }).build(),
 
             builder.setGetter(() -> gamepad1.y)
                 .setbFunction(() -> {
-                    left.setPosition(left.getPosition() + 0.1D);
+                    left.setPosition(1);
                 }).build(),
 
             builder.setGetter(() -> gamepad1.a)
                 .setbFunction(() -> {
-                    right.setPosition(right.getPosition() + 0.1D);
+                    right.setPosition(1);
                 }).build(),
             builder.setGetter(() -> gamepad1.x)
                 .setbFunction(() -> {
-                    right.setPosition(right.getPosition() - 0.1D);
+                    right.setPosition(0);
                 }).build(),
             builder.setGetter(() -> gamepad2.left_bumper)
                 .setbFunction(() -> {
-                    if(leftBat.getPosition() == 0.5)
-                        leftBat.setPosition(1);
-                    else leftBat.setPosition(0.5);
+                    if(leftBat.getPosition() == 1)
+                        leftBat.setPosition(0);
+                    else leftBat.setPosition(1);
                 }).build(),
             builder.setGetter(() -> gamepad2.right_bumper)
                 .setbFunction(() -> {
-                    if(rightBat.getPosition() == 0)
-                        rightBat.setPosition(0.5);
-                    else rightBat.setPosition(0);
+                    if(rightBat.getPosition() == 1)
+                        rightBat.setPosition(0);
+                    else rightBat.setPosition(1);
                 }).build()));
 
 
