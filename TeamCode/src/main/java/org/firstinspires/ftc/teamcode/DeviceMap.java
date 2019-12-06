@@ -3,9 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import android.content.Context;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.BNO055IMUImpl;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,16 +16,10 @@ import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcontroller.ultro.listener.UltroVuforia;
-import org.firstinspires.ftc.robotcore.internal.opmode.OpModeManagerImpl;
-import org.firstinspires.ftc.teamcode.drive.MathUtil;
-import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.revextensions2.ExpansionHubEx;
@@ -54,7 +49,7 @@ public final class DeviceMap {
     private Servo leftAuto, rightAuto, leftBat, rightBat;
     private Servo[] servos;
 
-    private BNO055IMUImpl imu;
+    private BNO055IMU imu = null;
     private Orientation lastAngles;
     private double globalAngle = 0;
 
@@ -167,34 +162,37 @@ public final class DeviceMap {
 
     }
     public /*CompletableFuture<Void>*/void setUpImu(HardwareMap map) {
+        //expansionHub.setAllI2cBusSpeeds(ExpansionHubEx.I2cBusSpeed.STANDARD_100K);
         //return CompletableFuture.runAsync(() -> {
 
-            expansionHub.setI2cBusSpeed(0, ExpansionHubEx.I2cBusSpeed.FAST_400K);
             telemetry.addLine("Setting up imu");
             telemetry.update();
-            imu = map.get( BNO055IMUImpl.class, "imu");
+            imu = map.get(BNO055IMU.class, "imu");
+
             BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
-            parameters.mode = BNO055IMU.SensorMode.IMU;
-            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-            parameters.loggingEnabled = true;
+            parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+            parameters.loggingEnabled      = true;
+            parameters.loggingTag          = "IMU";
+            parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
             imu.initialize(parameters);
 
-
-            DeviceMap dmap = DeviceMap.getInstance();
+            /*
             LinearOpMode linear = null;
-            if(dmap.getCurrentOpMode() instanceof AutoOpMode) {
-                linear = (LinearOpMode) dmap.getCurrentOpMode();
+            if(getCurrentOpMode() instanceof AutoOpMode) {
+                linear = (LinearOpMode) getCurrentOpMode();
             }
 
             while ((linear != null && linear.opModeIsActive()) && !imu.isGyroCalibrated()) {
-
+                telemetry.addData("calibrated", imu.isGyroCalibrated());
+                telemetry.update();
             }
-            imu.resetDeviceConfigurationForOpMode();
+            telemetry.addData("calibrated", imu.isGyroCalibrated());
 
-            lastAngles = getOrientation();;
+             */
         //}, service);
     }
 
@@ -328,7 +326,7 @@ public final class DeviceMap {
         return allMotors;
     }
 
-    public BNO055IMUImpl getImu() {
+    public BNO055IMU getImu() {
         return imu;
     }
     public VuforiaLocalizer getVuforia() {
@@ -366,42 +364,5 @@ public final class DeviceMap {
 
     public OpenCvCamera getCamera() {
         return camera;
-    }
-
-    public void resetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        globalAngle = 0;
-    }
-
-    /**
-     * Get current cumulative angle rotation from last reset.
-     * @return Angle in degrees. + = left, - = right.
-     */
-    public double getAngle()
-    {
-        // We experimentally determined the Z axis is the axis we want to use for heading angle.
-        // We have to process the angle because the imu works in euler angles so the Z axis is
-        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
-        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
-
-        Orientation angles = getOrientation();
-
-        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-
-        if (deltaAngle < -180)
-            deltaAngle += 360;
-        else if (deltaAngle > 180)
-            deltaAngle -= 360;
-
-        globalAngle += deltaAngle;
-
-        lastAngles = angles;
-
-        return globalAngle;
-    }
-
-    private Orientation getOrientation() {
-        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     }
 }

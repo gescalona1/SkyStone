@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -10,19 +8,18 @@ import com.qualcomm.robotcore.util.RobotLog;
 import net.jafama.FastMath;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.DeviceMap;
-import org.firstinspires.ftc.teamcode.monitor.MonitorIMU;
+import org.firstinspires.ftc.teamcode.Ultro;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import org.openftc.revextensions2.RevBulkData;
 //import org.openftc.revextensions2.RevBulkData;
 
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 
 public final class MecanumDriver implements IDriver {
-    private static final double TURN_OFFSET = 3F;
+    private static final double TURN_OFFSET = 2.5F;
 
     private boolean test;
     private DeviceMap map;
@@ -39,6 +36,18 @@ public final class MecanumDriver implements IDriver {
         this.map = DeviceMap.getInstance();
         this.motors = map.getDriveMotors();
         this.test = true;
+    }
+
+    public void append(Direction direction, double power) {
+        DcMotor leftTop = map.getLeftTop();
+        DcMotor rightTop = map.getRightTop();
+        DcMotor leftBottom = map.getLeftBottom();
+        DcMotor rightBottom = map.getRightBottom();
+
+        leftTop.setPower(leftTop.getPower() + direction.getLeftTop() * power);
+        rightTop.setPower(rightTop.getPower() + direction.getRightTop() * power);
+        leftBottom.setPower(leftBottom.getPower() + direction.getLeftBottom() * power);
+        rightBottom.setPower(rightBottom.getPower() + direction.getRightBottom() * power);
     }
 
     /**
@@ -89,13 +98,11 @@ public final class MecanumDriver implements IDriver {
         int leftBottomTarget = FastMath.abs(current[2] + (int) (calc * direction.getLeftBottom()));
         int rightBottomTarget = FastMath.abs(current[3] + (int) (calc * direction.getRightBottom()));
 
-        move(direction, power);
-
         double angle = 0, initialAngle = 0;
         if(gyroAssist) {
             DeviceMap map = DeviceMap.getInstance();
-            map.resetAngle();
-            angle = map.getAngle();
+            Ultro.imuNotif.resetAngle();
+            angle = Ultro.imuNotif.getAngle();
             initialAngle = angle;
         }
         LinearOpMode linear = null;
@@ -103,6 +110,8 @@ public final class MecanumDriver implements IDriver {
             linear = (LinearOpMode) map.getCurrentOpMode();
             if(linear == null) return;
         }
+        move(direction, power);
+
         while(linear.opModeIsActive() && motorsBusy(leftTopTarget, rightTopTarget, leftBottomTarget, rightBottomTarget)) {
             if (gyroAssist){
                 double correctedPower = power * calculatePowerMultiplierLinear(0, angle, power);
@@ -124,7 +133,7 @@ public final class MecanumDriver implements IDriver {
                 updateTelemetry();
 
             }
-            angle = map.getAngle();
+            angle = Ultro.imuNotif.getAngle();
         }
 
         stop();
@@ -218,10 +227,8 @@ public final class MecanumDriver implements IDriver {
         //min = 55
         double max = angle + TURN_OFFSET;
 
-        move(direction, power);
 
-        map.resetAngle();
-        double currentAngle = map.getAngle();
+        double currentAngle = Ultro.imuNotif.getAngle();
         double firstAngle = currentAngle;
 
         min = min + firstAngle;
@@ -233,16 +240,30 @@ public final class MecanumDriver implements IDriver {
             linear = (LinearOpMode) map.getCurrentOpMode();
         }
 
+
+        move(direction, power);
         boolean boost;
         final double oneThird = 1D/3D;
+        RobotLog.dd("UltroAngle", "START ANGLE: " + firstAngle);
+
+        Set<Double> yes = new LinkedHashSet<>();
         while ((linear != null && linear.opModeIsActive()) && !(min <= currentAngle && currentAngle <= max)) {
-            currentAngle = map.getAngle();
+            yes.add(currentAngle);
+            currentAngle = Ultro.imuNotif.getAngle();
         }
         stop();
+
+        for(double dd : yes) {
+            String line = String.format(Locale.ENGLISH, "%f <= %f <= %f", min, dd, max);
+            RobotLog.dd("UltroAngle", line);
+        }
+        RobotLog.dd("UltroAngle", "END ANGLE: " + currentAngle);
+        RobotLog.dd("UltroAngle", "DIFF END ANGLE: " + Ultro.imuNotif.getAngle());
+        updateTelemetry();
     }
 
     public void turnOrigin(double power) {
-        double angle = map.getAngle();
+        double angle = Ultro.imuNotif.getAngle();
         turn(power, angle);
     }
 

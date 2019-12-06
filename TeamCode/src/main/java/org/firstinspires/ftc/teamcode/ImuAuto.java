@@ -33,11 +33,8 @@ public class ImuAuto extends AutoOpMode {
 
     @Override
     public void beforeLoop() {
-        DeviceMap map = DeviceMap.getInstance();
-
-        telemetry.addLine(String.format(Locale.ENGLISH, "Angle: %f", map.getAngle()));
+        telemetry.addLine(String.format(Locale.ENGLISH, "Angle: %f", Ultro.imuNotif.getAngle()));
         telemetry.update();
-
     }
 
     @Override
