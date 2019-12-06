@@ -27,6 +27,7 @@ import org.firstinspires.ftc.teamcode.drive.MathUtil;
 import org.firstinspires.ftc.teamcode.opmode.AutoOpMode;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvInternalCamera;
+import org.openftc.revextensions2.ExpansionHubEx;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -41,6 +42,8 @@ public final class DeviceMap {
     private static DeviceMap INSTANCE;
     private Telemetry telemetry;
     private OpMode currentOpMode;
+
+    private ExpansionHubEx expansionHub;
 
     private DcMotor leftTop, leftBottom, rightTop, rightBottom,
             leftIntake, rightIntake, conveyer;
@@ -69,19 +72,24 @@ public final class DeviceMap {
         //for later
 
         INSTANCE = this;
+        setUpExpansionHub(map);
         //CompletableFuture.allOf(
         //).thenRunAsync(() -> {
         //}, service);
     }
     public void setupAll(HardwareMap map) {
-        setUpMotors(map);
-        setUpImu(map);
-        setUpVuforia(map);
-        initTfod(map);
-        setupServos(map);
-        setupSensors(map);
+        setUpExpansionHub(map);
+        setUpMotors(map); //init motors
+        setUpImu(map); //init imu
+        setUpVuforia(map); //init vuforia
+        initTfod(map); //init tensorflow
+        setupServos(map); //init servos
+        setupSensors(map); //init d-sensors, color-sensors
     }
 
+    public void setUpExpansionHub(HardwareMap map) {
+        this.expansionHub = map.get(ExpansionHubEx.class, "Expansion Hub 2");
+    }
     /**
      * This will just set up all the driveMotors
      * @param map
@@ -160,6 +168,8 @@ public final class DeviceMap {
     }
     public /*CompletableFuture<Void>*/void setUpImu(HardwareMap map) {
         //return CompletableFuture.runAsync(() -> {
+
+            expansionHub.setI2cBusSpeed(0, ExpansionHubEx.I2cBusSpeed.FAST_400K);
             telemetry.addLine("Setting up imu");
             telemetry.update();
             imu = map.get( BNO055IMUImpl.class, "imu");
@@ -184,7 +194,7 @@ public final class DeviceMap {
             }
             imu.resetDeviceConfigurationForOpMode();
 
-            lastAngles = getOrientation();
+            lastAngles = getOrientation();;
         //}, service);
     }
 
@@ -237,6 +247,10 @@ public final class DeviceMap {
     public void deactivateTfod() {
         if(tfod != null)
             tfod.deactivate();
+    }
+
+    public ExpansionHubEx getExpansionHub() {
+        return expansionHub;
     }
 
     //The methods below get all the driveMotors
