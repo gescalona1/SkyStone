@@ -120,11 +120,11 @@ public final class MecanumDriver implements IDriver {
                 addData("power", power);
                 if (angle > initialAngle + 2) {
                     addData("Increasing right side", correctedPower);
-                    gyroAssist(direction.getRightSide(), power);
+                    gyroAssist(direction.getRightSide(), power + 0.1);
                     gyroAssist(direction.getLeftSide(), correctedPower);
                 } else if(angle < initialAngle - 2) {
                     addData("Increasing left side", correctedPower);
-                    gyroAssist(direction.getLeftSide(), power);
+                    gyroAssist(direction.getLeftSide(), power + 0.1);
                     gyroAssist(direction.getRightSide(), correctedPower);
                 }else {
                     addData("normal", "side");
